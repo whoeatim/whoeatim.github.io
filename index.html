@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на внимательность</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 50px;
+            margin: 0;
+            transition: all 0.3s;
+        }
+        #content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #scary {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: black;
+        }
+        #scary img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1>Тест на внимательность</h1>
+        <p>Нажмите кнопку ниже, чтобы начать тест.</p>
+        <button id="startBtn" id="fullscreenBtn">Начать тест</button>
+    </div>
+
+    <div id="scary">
+        <img id="scaryImage" src="" alt="">
+        <audio id="scream" autoplay loop></audio>
+    </div>
+
+    <script>
+        // Коллекция скример-изображений (ЗАМЕНИТЕ НА СВОИ ССЫЛКИ!)
+        const scaryImages = [
+            {img: "photo1.jpg", sound: "rai.mp3"},
+            {img: "photo2.jpg", sound: "rai.mp3"},
+            {img: "photo3.jpg", sound: "rai.mp3"}
+        ];
+        
+        // Элементы страницы
+        const startBtn = document.getElementById('startBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const scaryDiv = document.getElementById('scary');
+        const scaryImage = document.getElementById('scaryImage');
+        const screamAudio = document.getElementById('scream');
+        
+        // Состояние теста
+        let isTestRunning = false;
+        
+        // Начать тест
+        function startTest() {
+            if (isTestRunning) return;
+            isTestRunning = true;
+            
+            startBtn.textContent = 'Идёт подготовка...';
+            startBtn.disabled = true;
+            
+            // Случайная задержка 3-10 секунд
+            const delay = 3000 + Math.random() * 7000;
+            
+            setTimeout(() => {
+                showRandomScary();
+            }, delay);
+        }
+        
+        // Показать случайный скример
+        function showRandomScary() {
+            const randomScary = scaryImages[Math.floor(Math.random() * scaryImages.length)];
+            
+            scaryImage.src = randomScary.img;
+            screamAudio.src = randomScary.sound;
+            screamAudio.loop = true;
+            
+            scaryDiv.style.display = 'block';
+            
+            // Вибрация (если поддерживается)
+            if ("vibrate" in navigator) {
+                navigator.vibrate([500, 200, 500, 200, 500]);
+            }
+            
+            // Автовоспроизведение звука
+            screamAudio.play().catch(e => {
+                console.error("Ошибка воспроизведения:", e);
+            });
+        }
+        
+        // Полноэкранный режим
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                fullscreenBtn.textContent = 'Выйти из полноэкрана';
+            } else {
+                document.exitFullscreen();
+                fullscreenBtn.textContent = 'Полный экран';
+            }
+        }
+
+        // Обработчики событий
+        startBtn.addEventListener('click', startTest);
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+    </script>
+</body>
+</html>
