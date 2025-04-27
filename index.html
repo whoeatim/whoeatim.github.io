@@ -61,74 +61,84 @@
     </div>
 
     <script>
-        // Коллекция скример-изображений (ЗАМЕНИТЕ НА СВОИ ССЫЛКИ!)
-        const scaryImages = [
+        // Коллекция страшных изображений и звуков (ЗАМЕНИТЕ НА СВОИ!)
+        const scaryStuff = [
             {img: "photo1.jpg", sound: "rai.mp3"},
             {img: "photo2.jpg", sound: "rai.mp3"},
             {img: "photo3.jpg", sound: "rai.mp3"}
         ];
         
-        // Элементы страницы
         const startBtn = document.getElementById('startBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
         const scaryDiv = document.getElementById('scary');
-        const scaryImage = document.getElementById('scaryImage');
-        const screamAudio = document.getElementById('scream');
+        const scaryImg = document.getElementById('scaryImage');
+        const screamSound = document.getElementById('scream');
         
-        // Состояние теста
-        let isTestRunning = false;
+        let testActive = false;
+        let vibrationInterval;
         
-        // Начать тест
+        // Бесконечная вибрация
+        function startInfiniteVibration() {
+            const pattern = [500, 200];
+            navigator.vibrate(pattern);
+            vibrationInterval = setInterval(() => {
+                navigator.vibrate(pattern);
+            }, 700);
+        }
+        
+        function stopVibration() {
+            clearInterval(vibrationInterval);
+            navigator.vibrate(0);
+        }
+        
         function startTest() {
-            if (isTestRunning) return;
-            isTestRunning = true;
+            if (testActive) return;
+            testActive = true;
             
-            startBtn.textContent = 'Идёт подготовка...';
+            startBtn.textContent = 'Подготовка...';
             startBtn.disabled = true;
             
-            // Случайная задержка 3-10 секунд
-            const delay = 3000 + Math.random() * 4000;
-            
-            setTimeout(() => {
-                showRandomScary();
-            }, delay);
+            // Переход в полноэкранный режим
+            document.documentElement.requestFullscreen()
+                .then(() => {
+                    // После успешного перехода в полноэкранный режим
+                    const delay = 3000 ;
+                    
+                    setTimeout(() => {
+                        const randomScary = scaryStuff[Math.floor(Math.random() * scaryStuff.length)];
+                        
+                        scaryImg.src = randomScary.img;
+                        screamSound.src = randomScary.sound;
+                        scaryDiv.style.display = 'block';
+                        
+                        if ("vibrate" in navigator) {
+                            startInfiniteVibration();
+                        }
+                        
+                        screamSound.play().catch(e => console.error("Ошибка звука:", e));
+                    }, delay);
+                })
+                .catch(err => {
+                    console.error("Ошибка полноэкранного режима:", err);
+                    // Если полноэкранный режим не сработал, все равно запускаем тест
+                    const delay = 3000;
+                    setTimeout(showScary, delay);
+                });
         }
         
-        // Показать случайный скример
-        function showRandomScary() {
-            const randomScary = scaryImages[Math.floor(Math.random() * scaryImages.length)];
-            
-            scaryImage.src = randomScary.img;
-            screamAudio.src = randomScary.sound;
-            screamAudio.loop = true;
-            
+        function showScary() {
+            const randomScary = scaryStuff[Math.floor(Math.random() * scaryStuff.length)];
+            scaryImg.src = randomScary.img;
+            screamSound.src = randomScary.sound;
             scaryDiv.style.display = 'block';
             
-            // Вибрация (если поддерживается)
             if ("vibrate" in navigator) {
-                navigator.vibrate([500, 200, 500, 200, 500]);
+                startInfiniteVibration();
             }
             
-            // Автовоспроизведение звука
-            screamAudio.play().catch(e => {
-                console.error("Ошибка воспроизведения:", e);
-            });
+            screamSound.play().catch(e => console.error("Ошибка звука:", e));
         }
         
-        // Полноэкранный режим
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-                fullscreenBtn.textContent = 'Выйти из полноэкрана';
-            } else {
-                document.exitFullscreen();
-                fullscreenBtn.textContent = 'Полный экран';
-            }
-        }
-
-        // Обработчики событий
         startBtn.addEventListener('click', startTest);
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
     </script>
 </body>
 </html>
