@@ -17,11 +17,6 @@ body {
     font-size: 20px;
 }
 
-.ava{
-    text-align: center;
-    margin-top: 5%;
-}
-
 .age{
     color: white;
     font-family: "Playpen Sans Hebrew", cursive;
@@ -32,9 +27,27 @@ body {
     font-size: 20px;
 }
 
-.ava video{
-    width: 30%;
-}  
+@media only screen and (max-width: 1024px){
+    .ava video{
+        width: 30%;
+    }  
+
+    .ava{
+        text-align: center;
+        margin-top: 15%;
+    }   
+}
+
+@media only screen and (min-width: 1024px){
+    .ava video{
+        width: 13%;
+    }  
+
+    .ava{
+        text-align: center;
+        margin-top: 5%;
+    }
+}
 
 .image-button {
     width: 40px;
